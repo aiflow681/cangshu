@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仓鼠照顾游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'SimHei', 'Arial', sans-serif;
+            background: #F5E6D3;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            background: transparent;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        #gameCanvas {
+            display: block;
+            border: 4px solid #8B4513;
+            border-radius: 15px;
+            background: #F5E6D3;
+            margin: 0 auto;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            max-width: 100%;
+            height: auto;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 0 10px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            transition: all 0.3s;
+            font-weight: bold;
+            min-width: 140px;
+        }
+
+        button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .info {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .info h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 243, 205, 0.95);
+            border-left: 4px solid #ffc107;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .status strong {
+            color: #856404;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+
+        .controls-hint {
+            text-align: center;
+            margin-top: 15px;
+            color: #666;
+            font-size: 14px;
+            padding: 0 10px;
+        }
+
+        /* 移动端响应式样式 */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+                min-height: auto;
+            }
+
+            .container {
+                padding: 0;
+            }
+
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 5px;
+                padding: 0 10px;
+            }
+
+            .subtitle {
+                font-size: 0.8em;
+                margin-bottom: 10px;
+                padding: 0 10px;
+            }
+
+            #gameCanvas {
+                border-width: 3px;
+                border-radius: 10px;
+                width: 100% !important;
+                height: auto !important;
+                max-height: 60vh;
+                object-fit: contain;
+            }
+
+            .controls {
+                margin-top: 15px;
+                gap: 8px;
+                padding: 0 5px;
+            }
+
+            button {
+                padding: 10px 16px;
+                font-size: 14px;
+                min-width: 100px;
+                flex: 1;
+                max-width: 150px;
+            }
+
+            .controls-hint {
+                font-size: 11px;
+                margin-top: 10px;
+                padding: 0 10px;
+                line-height: 1.4;
+            }
+
+            .info, .status {
+                padding: 12px;
+                font-size: 12px;
+                margin-top: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.3em;
+            }
+
+            .subtitle {
+                font-size: 0.75em;
+            }
+
+            #gameCanvas {
+                max-height: 55vh;
+            }
+
+            button {
+                padding: 8px 12px;
+                font-size: 13px;
+                min-width: 90px;
+            }
+
+            .controls {
+                gap: 6px;
+            }
+
+            .controls-hint {
+                font-size: 10px;
+            }
+        }
+
+        @media (orientation: landscape) and (max-height: 600px) {
+            #gameCanvas {
+                max-height: 70vh;
+            }
+
+            h1 {
+                font-size: 1.2em;
+                margin-bottom: 3px;
+            }
+
+            .subtitle {
+                font-size: 0.7em;
+                margin-bottom: 5px;
+            }
+
+            .controls {
+                margin-top: 10px;
+            }
+
+            button {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐹 仓鼠照顾游戏</h1>
+
+        <!-- 游戏画布 -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- 控制按钮 -->
+        <div class="controls">
+            <button onclick="game?.togglePause()">⏸️ 暂停/继续</button>
+            <button onclick="game?.reset()">🔄 重置</button>
+            <button onclick="toggleCustomization()">🎨 自定义</button>
+        </div>
+        
+        <div style="text-align: center; margin-top: 15px; color: #666; font-size: 14px;" class="controls-hint">
+            <strong>控制说明：</strong> 点击按钮进行交互 | 按空格键暂停 | 按R键重置
+        </div>
+
+        <!-- 自定义面板（默认隐藏） -->
+        <div id="customizationPanel" style="display: none; margin-top: 20px; padding: 20px; background: rgba(255, 255, 255, 0.95); border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+            <h3 style="margin-top: 0;">🎨 自定义你的仓鼠</h3>
+            
+            <div style="margin-bottom: 15px;">
+                <strong>仓鼠颜色：</strong>
+                <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                    <button onclick="changeHamsterColor('#D2691E')" style="background: #D2691E; width: 50px; height: 50px; border-radius: 50%; border: 3px solid #333; cursor: pointer;" title="棕色"></button>
+                    <button onclick="changeHamsterColor('#FFFFFF')" style="background: #FFFFFF; width: 50px; height: 50px; border-radius: 50%; border: 3px solid #333; cursor: pointer;" title="白色"></button>
+                    <button onclick="changeHamsterColor('#808080')" style="background: #808080; width: 50px; height: 50px; border-radius: 50%; border: 3px solid #333; cursor: pointer;" title="灰色"></button>
+                    <button onclick="changeHamsterColor('#FFD700')" style="background: #FFD700; width: 50px; height: 50px; border-radius: 50%; border: 3px solid #333; cursor: pointer;" title="金色"></button>
+                    <button onclick="changeHamsterColor('#2F4F4F')" style="background: #2F4F4F; width: 50px; height: 50px; border-radius: 50%; border: 3px solid #333; cursor: pointer;" title="黑色"></button>
+                    <button onclick="changeHamsterColor('#DEB887')" style="background: #DEB887; width: 50px; height: 50px; border-radius: 50%; border: 3px solid #333; cursor: pointer;" title="黄褐色"></button>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <strong>笼子地板颜色：</strong>
+                <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                    <button onclick="changeCageColor('#F4A460')" style="background: #F4A460; width: 50px; height: 50px; border-radius: 10px; border: 3px solid #333; cursor: pointer;" title="沙色"></button>
+                    <button onclick="changeCageColor('#B0E0E6')" style="background: #B0E0E6; width: 50px; height: 50px; border-radius: 10px; border: 3px solid #333; cursor: pointer;" title="蓝色"></button>
+                    <button onclick="changeCageColor('#90EE90')" style="background: #90EE90; width: 50px; height: 50px; border-radius: 10px; border: 3px solid #333; cursor: pointer;" title="绿色"></button>
+                    <button onclick="changeCageColor('#FFB6C1')" style="background: #FFB6C1; width: 50px; height: 50px; border-radius: 10px; border: 3px solid #333; cursor: pointer;" title="粉色"></button>
+                    <button onclick="changeCageColor('#DDA0DD')" style="background: #DDA0DD; width: 50px; height: 50px; border-radius: 10px; border: 3px solid #333; cursor: pointer;" title="紫色"></button>
+                </div>
+            </div>
+            
+            <button onclick="toggleCustomization()" style="margin-top: 10px;">✅ 完成</button>
+        </div>
+    </div>
+
+    <!-- 按顺序加载JavaScript文件 -->
+    <script src="js/config.js"></script>
+    <script>
+        // Set language to Chinese
+        CONFIG.LANGUAGE = 'zh';
+    </script>
+    <script src="js/utils.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/environment.js"></script>
+    <script src="js/hamster.js"></script>
+    <script src="js/interactions.js"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- 自定义功能 -->
+    <script>
+        function toggleCustomization() {
+            const panel = document.getElementById('customizationPanel');
+            console.log('Toggle customization clicked, panel:', panel);
+            if (panel) {
+                if (panel.style.display === 'none' || panel.style.display === '') {
+                    panel.style.display = 'block';
+                    console.log('Panel shown');
+                } else {
+                    panel.style.display = 'none';
+                    console.log('Panel hidden');
+                }
+            } else {
+                console.error('Customization panel not found!');
+            }
+        }
+        
+        function changeHamsterColor(color) {
+            if (window.game && window.game.hamsters && window.game.hamsters.length > 0) {
+                // Change all hamsters' colors
+                window.game.hamsters.forEach(hamster => {
+                    hamster.color = color;
+                });
+                console.log('🎨 仓鼠颜色已更改为', color);
+                
+                // 显示反馈
+                const feedback = document.createElement('div');
+                feedback.textContent = '✅ 颜色已更改！';
+                feedback.style.position = 'fixed';
+                feedback.style.top = '50%';
+                feedback.style.left = '50%';
+                feedback.style.transform = 'translate(-50%, -50%)';
+                feedback.style.background = '#4CAF50';
+                feedback.style.color = 'white';
+                feedback.style.padding = '20px 40px';
+                feedback.style.borderRadius = '10px';
+                feedback.style.fontSize = '20px';
+                feedback.style.fontWeight = 'bold';
+                feedback.style.zIndex = '10000';
+                feedback.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
+                
+                document.body.appendChild(feedback);
+                
+                setTimeout(() => {
+                    document.body.removeChild(feedback);
+                }, 800);
+            }
+        }
+        
+        function changeCageColor(color) {
+            if (window.game) {
+                CONFIG.CAGE.BEDDING_COLOR = color;
+                console.log('🎨 笼子颜色已更改为', color);
+                
+                // 显示反馈
+                const feedback = document.createElement('div');
+                feedback.textContent = '✅ 笼子颜色已更改！';
+                feedback.style.position = 'fixed';
+                feedback.style.top = '50%';
+                feedback.style.left = '50%';
+                feedback.style.transform = 'translate(-50%, -50%)';
+                feedback.style.background = '#4CAF50';
+                feedback.style.color = 'white';
+                feedback.style.padding = '20px 40px';
+                feedback.style.borderRadius = '10px';
+                feedback.style.fontSize = '20px';
+                feedback.style.fontWeight = 'bold';
+                feedback.style.zIndex = '10000';
+                feedback.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
+                
+                document.body.appendChild(feedback);
+                
+                setTimeout(() => {
+                    document.body.removeChild(feedback);
+                }, 800);
+            }
+        }
+    </script>
+</body>
+</html>
